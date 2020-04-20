@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity
 
     Menu menu;
     Map<String, ArrayList<Source>> globalHM;
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -42,6 +44,23 @@ public class MainActivity extends AppCompatActivity
            menu.add(menu.NONE,i++,menu.NONE,showCamelCase(temp));
     }
 
+    public void printMap(Map<String, ArrayList<Source>> hashMap)
+    {
+        for(String key: hashMap.keySet())
+        {
+            Log.d(TAG, "printMap: bp:==============================================");
+            Log.d(TAG, "printMap: bp: key: " + key);
+            Log.d(TAG, "printMap: bp: Number of Value: " + hashMap.get(key).size());
+            Log.d(TAG, "printMap: bp:==============================================");
+            for(Source s:hashMap.get(key))
+            {
+                Log.d(TAG, "printMap: bp: ID :" + s.getId());
+                Log.d(TAG, "printMap: bp: Name :" + s.getName());
+                Log.d(TAG, "printMap: bp: Category :" + s.getCategory());
+                Log.d(TAG, "printMap: bp:---------------------------------------------");
+            }
+        }
+    }
 
     public String showCamelCase(String str)
     {
@@ -57,17 +76,10 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         this.menu = menu;
-//        int i = 0;
-//        for(Source temp: sourceArrayList)
-//        {
-//            menu.add(menu.NONE, i, menu.NONE, temp.getCategory());
-//            i++;
-//        }
 
         return super.onCreateOptionsMenu(menu);
     }

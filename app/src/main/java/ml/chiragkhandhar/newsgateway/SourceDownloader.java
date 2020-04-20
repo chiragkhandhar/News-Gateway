@@ -150,23 +150,22 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
         ArrayList<Source> temp;
 
         hashMap.put("all",sourceArrayList);
-        for(Source source:sourceArrayList){
+        for(Source source:sourceArrayList)
+        {
             arr.clear();
             Source source1 = new Source();
             source1.setId(source.getId());
             source1.setName(source.getName());
-            Log.d(TAG, "onPostExecute: "+source.getCategory());
+            source1.setCategory(source.getCategory());
 
-
-            if(hashMap.containsKey(source.getCategory().toLowerCase())){
-                Log.d(TAG, "onPostExecute: "+"inside non-unique category");
+            if(hashMap.containsKey(source.getCategory().toLowerCase()))
+            {
                 temp = hashMap.get(source.getCategory());
                 temp.add(source1);
                 hashMap.put(source.getCategory(),temp);
             }
             else
             {
-                Log.d(TAG, "onPostExecute: "+"inside unique category");
                 hashMap.put(source.getCategory(),new ArrayList<Source>());
                 temp = hashMap.get(source.getCategory());
                 temp.add(source1);
@@ -176,12 +175,6 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
         super.onPostExecute(sourceArrayList);
         Log.d(TAG, "onPostExecute: "+hashMap);
 
-//        for(Map.Entry<String,ArrayList<Source>> entry : hashMap.entrySet()) {
-//            String key = entry.getKey();
-//
-//            Log.d(TAG, "onPostExecute: "+hashMap.get(key).size());
-//        }
         mainActivity.setSources(hashMap);
-
     }
 }
