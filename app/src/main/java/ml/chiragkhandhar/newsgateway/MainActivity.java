@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                     {
                         Source temp = sourceList.get(position);
+                        new ArticleDownloader(MainActivity.this).execute(temp.getId());
                         Toast.makeText(MainActivity.this, temp.getName() + " Selected", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(drawerList);
                     }
