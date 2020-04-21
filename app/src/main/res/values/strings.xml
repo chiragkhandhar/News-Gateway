@@ -2,5 +2,8 @@
     <string name="app_name">News Gateway</string>
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
+    <string name="nn_msg1">Oh no!</string>
+    <string name="nn_msg2">No Internet found. Check your connection or try again.</string>
+    <string name="try_again">Try Again</string>
 
 </resources>

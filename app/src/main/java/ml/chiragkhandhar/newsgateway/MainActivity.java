@@ -6,8 +6,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.content.Intent;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,16 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -36,13 +36,15 @@ public class MainActivity extends AppCompatActivity
     Map<String, ArrayList<Source>> globalHM;
     ArrayList<Source> sourceList;
     private static final String TAG = "MainActivity";
+    TextView nn_msg1, nn_msg2;
+    Button tryAgain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setUpComponents();
+        setUp_Components();
 
 
         drawerList.setOnItemClickListener(
@@ -64,14 +66,55 @@ public class MainActivity extends AppCompatActivity
                 R.string.drawer_close
         );
 
-        new SourceDownloader(this).execute();
+        if(networkChecker())
+        {
+            new SourceDownloader(this).execute();
+            nn_msg1.setVisibility(View.GONE);
+            nn_msg2.setVisibility(View.GONE);
+            tryAgain.setVisibility(View.GONE);
+        }
+        else
+        {
+            nn_msg1.setVisibility(View.VISIBLE);
+            nn_msg2.setVisibility(View.VISIBLE);
+            tryAgain.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void setUpComponents()
+     public void setUp_Categories(View v)
     {
+        if(networkChecker())
+        {
+            new SourceDownloader(this).execute();
+            nn_msg1.setVisibility(View.GONE);
+            nn_msg2.setVisibility(View.GONE);
+            tryAgain.setVisibility(View.GONE);
+        }
+        else
+        {
+            nn_msg1.setVisibility(View.VISIBLE);
+            nn_msg2.setVisibility(View.VISIBLE);
+            tryAgain.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setUp_Components()
+    {
+        nn_msg1 = findViewById(R.id.nonetworkIcon);
+        nn_msg2 = findViewById(R.id.nonetworkMsg2);
+        tryAgain = findViewById(R.id.tryAgain);
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerList = findViewById(R.id.drawer_list);
         sourceList = new ArrayList<>();
+    }
+
+    public boolean networkChecker()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(cm == null)
+            return false;
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     public void setSources(Map<String, ArrayList<Source>> hashMap)
