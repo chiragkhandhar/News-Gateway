@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,7 +35,6 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
     {
         ArrayList<Source> finalData;
         String URL = "https://newsapi.org/v2/sources?language=en&country=us&category=&apiKey=" + BuildConfig.API_KEY;
-
         String data = getSourceDatafromURL(URL);
         finalData = parseData(data);
         return finalData;
@@ -67,7 +65,6 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
             return sb.toString();
         }
 
-        Log.d(TAG, "getSourceDatafromURL: bp: " + sb.toString());
         return sb.toString();
     }
 
@@ -143,10 +140,10 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
     @Override
     protected void onPostExecute(ArrayList<Source> sourceArrayList)
     {
-        //new arraylist
+        // New arraylist
         ArrayList<Source> arr = new ArrayList<>();
 
-        //get hashmap arraylist and modify it
+        // Get hashmap arraylist and modify it
         ArrayList<Source> temp;
 
         hashMap.put("all",sourceArrayList);
@@ -173,8 +170,7 @@ public class SourceDownloader extends AsyncTask<Void,Void, ArrayList<Source>>
             }
         }
         super.onPostExecute(sourceArrayList);
-        Log.d(TAG, "onPostExecute: "+hashMap);
-
+        Log.d(TAG, "onPostExecute: " + hashMap);
         mainActivity.setSources(hashMap);
     }
 }

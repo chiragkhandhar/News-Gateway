@@ -1,5 +1,7 @@
 package ml.chiragkhandhar.newsgateway;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 class Source implements Serializable
@@ -37,5 +39,10 @@ class Source implements Serializable
 
     void setCategory(String category) {
         this.category = category;
+    }
+
+    @NonNull
+    public String toString() {
+        return name;
     }
 }

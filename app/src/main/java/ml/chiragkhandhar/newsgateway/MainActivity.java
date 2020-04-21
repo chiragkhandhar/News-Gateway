@@ -1,66 +1,116 @@
 package ml.chiragkhandhar.newsgateway;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
 {
 
     Menu menu;
+    ActionBarDrawerToggle drawerToggle;
+    DrawerLayout drawerLayout;
+    ListView drawerList;
     Map<String, ArrayList<Source>> globalHM;
+    ArrayList<Source> sourceList;
     private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         setUpComponents();
+
+
+        drawerList.setOnItemClickListener(
+                new ListView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        Source temp = sourceList.get(position);
+                        Toast.makeText(MainActivity.this, temp.getName() + " Selected", Toast.LENGTH_SHORT).show();
+                        drawerLayout.closeDrawer(drawerList);
+                    }
+                }
+        );
+
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
+
         new SourceDownloader(this).execute();
     }
 
     private void setUpComponents()
     {
-
-
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerList = findViewById(R.id.drawer_list);
+        sourceList = new ArrayList<>();
     }
 
     public void setSources(Map<String, ArrayList<Source>> hashMap)
     {
        menu.clear();
        globalHM = hashMap;
-       int i = 0;
-       for(String temp: hashMap.keySet())
-           menu.add(menu.NONE,i++,menu.NONE,showCamelCase(temp));
+
+       for(String category: hashMap.keySet())
+           menu.add(showCamelCase(category));
+
+       sourceList.addAll(Objects.requireNonNull(globalHM.get("all")));
+
+       drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item,sourceList));
+
+        if (getSupportActionBar() != null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+
     }
 
-    public void printMap(Map<String, ArrayList<Source>> hashMap)
-    {
-        for(String key: hashMap.keySet())
-        {
-            Log.d(TAG, "printMap: bp:==============================================");
-            Log.d(TAG, "printMap: bp: key: " + key);
-            Log.d(TAG, "printMap: bp: Number of Value: " + hashMap.get(key).size());
-            Log.d(TAG, "printMap: bp:==============================================");
-            for(Source s:hashMap.get(key))
-            {
-                Log.d(TAG, "printMap: bp: ID :" + s.getId());
-                Log.d(TAG, "printMap: bp: Name :" + s.getName());
-                Log.d(TAG, "printMap: bp: Category :" + s.getCategory());
-                Log.d(TAG, "printMap: bp:---------------------------------------------");
-            }
-        }
-    }
+//    public void printMap(Map<String, ArrayList<Source>> hashMap)
+//    {
+//        for(String key: hashMap.keySet())
+//        {
+//            Log.d(TAG, "printMap: bp:==============================================");
+//            Log.d(TAG, "printMap: bp: key: " + key);
+//            Log.d(TAG, "printMap: bp: Number of Value: " + hashMap.get(key).size());
+//            Log.d(TAG, "printMap: bp:==============================================");
+//            for(Source s:hashMap.get(key))
+//            {
+//                Log.d(TAG, "printMap: bp: ID :" + s.getId());
+//                Log.d(TAG, "printMap: bp: Name :" + s.getName());
+//                Log.d(TAG, "printMap: bp: Category :" + s.getCategory());
+//                Log.d(TAG, "printMap: bp:---------------------------------------------");
+//            }
+//        }
+//    }
 
     public String showCamelCase(String str)
     {
@@ -75,19 +125,47 @@ public class MainActivity extends AppCompatActivity
         return CamelCase;
     }
 
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         this.menu = menu;
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
-        Toast.makeText(this, "Number: " + globalHM.get(item.getTitle().toString().toLowerCase()).size(), Toast.LENGTH_SHORT).show();
+        if(drawerToggle.onOptionsItemSelected(item))
+        {
+            Log.d(TAG, "onOptionsItemSelected: bp: drawerToggle: " + item);
+            return true;
+        }
+
+        setTitle(item.getTitle());
+
+        sourceList.clear();
+        ArrayList<Source> drawerTempList = globalHM.get(item.getTitle().toString().toLowerCase());
+
+        Toast.makeText(this, drawerTempList.size() + " Sources Loaded ", Toast.LENGTH_SHORT).show();
+
+        if(drawerTempList != null)
+            sourceList.addAll(drawerTempList);
+
+        ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         return super.onOptionsItemSelected(item);
     }
 }
