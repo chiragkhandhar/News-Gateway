@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,16 +29,21 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
 {
-
     Menu menu;
     ActionBarDrawerToggle drawerToggle;
     DrawerLayout drawerLayout;
     ListView drawerList;
     Map<String, ArrayList<Source>> globalHM;
     ArrayList<Source> sourceList;
+
     private static final String TAG = "MainActivity";
     TextView nn_msg1, nn_msg2;
     Button tryAgain;
+
+    static final String ACTION_MSG_TO_SERVICE = "ACTION_MSG_TO_SERVICE";
+    static final String ACTION_NEWS_STORY = "ACTION_NEWS_STORY";
+    static final String ARTICLE_LIST = "ARTICLE_LIST";
+    static final String SOURCE = "SOURCE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +52,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         setUp_Components();
 
+        Intent serviceIntent = new Intent(this, NewsService.class);
+        startService(serviceIntent);
+
 
         drawerList.setOnItemClickListener(
                 new ListView.OnItemClickListener() {
@@ -53,7 +62,9 @@ public class MainActivity extends AppCompatActivity
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                     {
                         Source temp = sourceList.get(position);
-                        new ArticleDownloader(MainActivity.this).execute(temp.getId());
+                        Intent intent = new Intent(MainActivity.ACTION_MSG_TO_SERVICE);
+                        intent.putExtra(SOURCE, temp);
+                        sendBroadcast(intent);
                         Toast.makeText(MainActivity.this, temp.getName() + " Selected", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(drawerList);
                     }
@@ -138,23 +149,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-//    public void printMap(Map<String, ArrayList<Source>> hashMap)
-//    {
-//        for(String key: hashMap.keySet())
-//        {
-//            Log.d(TAG, "printMap: bp:==============================================");
-//            Log.d(TAG, "printMap: bp: key: " + key);
-//            Log.d(TAG, "printMap: bp: Number of Value: " + hashMap.get(key).size());
-//            Log.d(TAG, "printMap: bp:==============================================");
-//            for(Source s:hashMap.get(key))
-//            {
-//                Log.d(TAG, "printMap: bp: ID :" + s.getId());
-//                Log.d(TAG, "printMap: bp: Name :" + s.getName());
-//                Log.d(TAG, "printMap: bp: Category :" + s.getCategory());
-//                Log.d(TAG, "printMap: bp:---------------------------------------------");
-//            }
-//        }
-//    }
 
     public String showCamelCase(String str)
     {
@@ -211,5 +205,13 @@ public class MainActivity extends AppCompatActivity
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        Intent i = new Intent(this,NewsService.class);
+        stopService(i);
+        super.onDestroy();
     }
 }

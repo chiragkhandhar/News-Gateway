@@ -21,14 +21,14 @@ import java.util.Date;
 public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>>
 {
     @SuppressLint("StaticFieldLeak")
-    private MainActivity mainActivity;
+    private NewsService newsService;
     private ArrayList<Article> articleArrayList = new ArrayList<>();
 
     private static final String TAG = "ArticleDownloader";
 
-    ArticleDownloader(MainActivity mainActivity)
+    ArticleDownloader(NewsService newsService)
     {
-        this.mainActivity = mainActivity;
+        this.newsService = newsService;
     }
 
     @Override
@@ -36,10 +36,10 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
     {
         String source = strings[0];
         String URL = "https://newsapi.org/v2/everything?sources=" + source + "&language=en&pageSize=100&apiKey=" + BuildConfig.API_KEY;
+        Log.d(TAG, "doInBackground: URL: bp:" + URL);
         String data = getArticleDataFromURL(URL);
         articleArrayList = parseJSON(data);
-
-        return null;
+        return articleArrayList;
     }
 
 
@@ -93,21 +93,13 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
                 tempArticle.setUrl(getArticleUrlfromData(article));
                 tempArticle.setUrlToImage(getUrlToImagefromData(article));
                 tempList.add(tempArticle);
-                Log.d(TAG, "parseJSON: bp:----------------------Article " + i +"--------------------------------");
-                Log.d(TAG, "parseJSON: bp: Title: " + tempArticle.getTitle());
-                Log.d(TAG, "parseJSON: bp: Author: " + tempArticle.getAuthor());
-                Log.d(TAG, "parseJSON: bp: Pub Date: " + tempArticle.getPublishedAt());
-                Log.d(TAG, "parseJSON: bp: Desc: " + tempArticle.getDescription());
-                Log.d(TAG, "parseJSON: bp: URL: " + tempArticle.getUrl());
-                Log.d(TAG, "parseJSON: bp: Image URL: " + tempArticle.getUrlToImage());
-                Log.d(TAG, "parseJSON: bp:------------------------------------------------------");
             }
-
         }
         catch (Exception e)
         {
             Log.d(TAG, "EXCEPTION | parseJSON: bp: " + e);
         }
+        Log.d(TAG, "bp: parseJSON: Number of Articles: " + tempList.size());
         return tempList;
     }
 
@@ -138,7 +130,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String title = "";
         try
         {
-            title = article.getString("title");
+            if(article.has("title"))
+                title = article.getString("title");
         }
         catch (Exception e)
         {
@@ -152,7 +145,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String author = "";
         try
         {
-            author = article.getString("author");
+            if(article.has("author"))
+                author = article.getString("author");
         }
         catch (Exception e)
         {
@@ -166,7 +160,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String desc = "";
         try
         {
-            desc = article.getString("description");
+            if(article.has("description"))
+                desc = article.getString("description");
         }
         catch (Exception e)
         {
@@ -181,7 +176,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String publishingDate = "";
         try
         {
-            publishingDate = article.getString("publishedAt");
+            if(article.has("publishedAt"))
+                publishingDate = article.getString("publishedAt");
         }
         catch (Exception e)
         {
@@ -195,7 +191,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String articleUrl = "";
         try
         {
-            articleUrl = article.getString("url");
+            if(article.has("url"))
+                articleUrl = article.getString("url");
         }
         catch(Exception e)
         {
@@ -209,7 +206,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         String urlToImage = "";
         try
         {
-            urlToImage = article.getString("urlToImage");
+            if(article.has("urlToImage"))
+                urlToImage = article.getString("urlToImage");
         }
         catch(Exception e)
         {
@@ -222,6 +220,8 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
     @Override
     protected void onPostExecute(ArrayList<Article> articles)
     {
+        Log.d(TAG, "bp: onPostExecute: Number of Articles: " + articles.size());
+        newsService.setArticles(articles);
         super.onPostExecute(articles);
     }
 }
