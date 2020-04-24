@@ -114,7 +114,6 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
             String pattern = "MMM dd, yyyy HH:mm";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             public_date = simpleDateFormat.format(date);
-            Log.d(TAG, "rerturnDate: "+public_date);
             return public_date;
         }
         catch (ParseException e)
@@ -123,7 +122,6 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         }
         return null;
     }
-
 
     private String getTitlefromData(JSONObject article)
     {
@@ -215,7 +213,6 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         }
         return urlToImage;
     }
-
 
     @Override
     protected void onPostExecute(ArrayList<Article> articles)

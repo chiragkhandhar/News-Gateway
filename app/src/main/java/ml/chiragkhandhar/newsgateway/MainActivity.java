@@ -23,6 +23,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -65,7 +67,9 @@ public class MainActivity extends AppCompatActivity
                         Intent intent = new Intent(MainActivity.ACTION_MSG_TO_SERVICE);
                         intent.putExtra(SOURCE, temp);
                         sendBroadcast(intent);
-                        Toast.makeText(MainActivity.this, temp.getName() + " Selected", Toast.LENGTH_SHORT).show();
+
+                        setTitle(temp.getName());
+                        Snackbar.make(view,temp.getName() + " Selected", Snackbar.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(drawerList);
                     }
                 }
@@ -92,6 +96,8 @@ public class MainActivity extends AppCompatActivity
             tryAgain.setVisibility(View.VISIBLE);
         }
     }
+
+
 
      public void setUp_Categories(View v)
     {
@@ -148,7 +154,6 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-
 
     public String showCamelCase(String str)
     {
