@@ -180,7 +180,6 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
-
     }
 
     public static String showCamelCase(String str)
@@ -238,6 +237,14 @@ public class MainActivity extends AppCompatActivity
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        IntentFilter filter1 = new IntentFilter(ACTION_NEWS_STORY);
+        registerReceiver(newsReceiver, filter1);
+        super.onResume();
     }
 
     @Override
