@@ -1,6 +1,9 @@
 package ml.chiragkhandhar.newsgateway;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+
 import java.util.Locale;
 
 public class ArticleFragment extends Fragment
 {
+    private static final String TAG = "ArticleFragment";
     public ArticleFragment() {
         // Required empty public constructor
     }
@@ -41,6 +47,7 @@ public class ArticleFragment extends Fragment
         if (args != null)
         {
             final Article temp = (Article) args.getSerializable("ARTICLE_DATA");
+
             if (temp == null)
             {
                 return null;
@@ -48,10 +55,20 @@ public class ArticleFragment extends Fragment
             int index = args.getInt("INDEX");
             int total = args.getInt("TOTAL_COUNT");
 
+
             if(!temp.getTitle().equals(""))
             {
                 TextView title = fragment_layout.findViewById(R.id.title);
                 title.setText(temp.getTitle());
+                title.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if(temp.getUrl() != null)
+                            openStory(temp.getUrl());
+                    }
+                });
             }
 
 
@@ -71,6 +88,45 @@ public class ArticleFragment extends Fragment
             {
                 TextView desc = fragment_layout.findViewById(R.id.description);
                 desc.setText(temp.getDescription());
+
+                desc.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if(temp.getUrl() != null)
+                            openStory(temp.getUrl());
+                    }
+                });
+            }
+
+            if(temp.getUrlToImage() == null || temp.getUrlToImage().equals("null"))
+            {
+                ImageView picture = fragment_layout.findViewById(R.id.image);
+                picture.setBackgroundResource(R.drawable.placeholder);
+
+                picture.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if(temp.getUrl() != null)
+                            openStory(temp.getUrl());
+                    }
+                });
+            }
+            else
+            {
+
+
+                ImageView picture = fragment_layout.findViewById(R.id.image);
+
+                Glide.with(this)
+                        .load(temp.getUrlToImage())
+                        .placeholder(R.drawable.loading)
+                        .fitCenter()
+                        .error(R.drawable.error)
+                        .into(picture);
             }
 
 
@@ -82,5 +138,28 @@ public class ArticleFragment extends Fragment
         }
         else
             return null;
+    }
+
+    public void printArticle(Article a)          // for testing purpose
+    {
+        Log.d(TAG, "printLst: bp: =========================================================================================================");
+        int i = 0;
+
+        Log.d(TAG, "printLst: bp: ---------------Article " + i++ + "---------------");
+        Log.d(TAG, "printLst: bp: Title:" + a.getTitle());
+        Log.d(TAG, "printLst: bp: Author:" + a.getAuthor());
+        Log.d(TAG, "printLst: bp: Published on:" + a.getPublishedAt());
+        Log.d(TAG, "printLst: bp: URL:" + a.getUrl());
+        Log.d(TAG, "printLst: bp: Image URL:" + a.getUrlToImage());
+        Log.d(TAG, "printLst: bp: Desc:" + a.getDescription());
+        Log.d(TAG, "printLst: bp:---------------------------------------------");
+
+        Log.d(TAG, "printLst: bp: =========================================================================================================");
+    }
+
+    public void openStory(String URL)
+    {
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(URL));
+        startActivity(i);
     }
 }

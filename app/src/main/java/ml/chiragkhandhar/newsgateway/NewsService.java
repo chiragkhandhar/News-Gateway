@@ -77,7 +77,6 @@ public class NewsService extends Service
         articleArrayList.clear();
         Log.d(TAG, "setArticles: bp: Number of Articles: " + articles.size());
         articleArrayList.addAll(articles);
-        printLst(articleArrayList);
     }
 
 
