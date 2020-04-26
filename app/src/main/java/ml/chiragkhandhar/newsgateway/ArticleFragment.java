@@ -121,8 +121,6 @@ public class ArticleFragment extends Fragment
             }
             else
             {
-
-
                 ImageView picture = fragment_layout.findViewById(R.id.image);
 
                 Glide.with(this)
@@ -133,8 +131,6 @@ public class ArticleFragment extends Fragment
                         .into(picture);
             }
 
-
-
             TextView pageNum = fragment_layout.findViewById(R.id.pageNo);
             pageNum.setText(String.format(Locale.US, "%d of %d", index, total));
 
@@ -144,7 +140,7 @@ public class ArticleFragment extends Fragment
             return null;
     }
 
-    void shareStory(View v, final String URL)
+    private void shareStory(View v, final String URL)
     {
         ImageButton btn = v.findViewById(R.id.share);
         btn.setOnClickListener(new View.OnClickListener()
@@ -176,7 +172,7 @@ public class ArticleFragment extends Fragment
         Log.d(TAG, "printLst: bp: =========================================================================================================");
     }
 
-    public void openStory(String URL)
+    private void openStory(String URL)
     {
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(URL));
         startActivity(i);
