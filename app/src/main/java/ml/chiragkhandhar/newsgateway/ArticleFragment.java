@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,6 +56,8 @@ public class ArticleFragment extends Fragment
             int index = args.getInt("INDEX");
             int total = args.getInt("TOTAL_COUNT");
 
+            if(temp.getUrl() != null)
+                shareStory(fragment_layout,temp.getUrl());
 
             if(!temp.getTitle().equals(""))
             {
@@ -114,6 +117,7 @@ public class ArticleFragment extends Fragment
                             openStory(temp.getUrl());
                     }
                 });
+
             }
             else
             {
@@ -140,12 +144,27 @@ public class ArticleFragment extends Fragment
             return null;
     }
 
+    void shareStory(View v, final String URL)
+    {
+        ImageButton btn = v.findViewById(R.id.share);
+        btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = getString(R.string.share_header) + URL;
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            }
+        });
+    }
+
     public void printArticle(Article a)          // for testing purpose
     {
         Log.d(TAG, "printLst: bp: =========================================================================================================");
-        int i = 0;
-
-        Log.d(TAG, "printLst: bp: ---------------Article " + i++ + "---------------");
         Log.d(TAG, "printLst: bp: Title:" + a.getTitle());
         Log.d(TAG, "printLst: bp: Author:" + a.getAuthor());
         Log.d(TAG, "printLst: bp: Published on:" + a.getPublishedAt());

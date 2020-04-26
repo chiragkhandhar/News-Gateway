@@ -6,5 +6,7 @@
     <string name="nn_msg2">No Internet found. Check your connection or try again.</string>
     <string name="try_again">Try Again</string>
     <string name="image">Image</string>
+    <string name="share">share</string>
+    <string name="share_header">Checkout this new story from News Gateway:\n</string>
 
 </resources>
