@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity
 {
     NewsReceiver newsReceiver;
     Menu menu;
+    ImageButton home;
     ActionBarDrawerToggle drawerToggle;
     DrawerLayout drawerLayout;
     ListView drawerList;
@@ -90,6 +92,18 @@ public class MainActivity extends AppCompatActivity
                 }
         );
 
+        home.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                setTitle(getString(R.string.app_name));
+                fragments.clear();
+                pageAdapter.notifyDataSetChanged();
+
+            }
+        });
+
         drawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
@@ -139,6 +153,7 @@ public class MainActivity extends AppCompatActivity
         nn_msg1 = findViewById(R.id.nonetworkIcon);
         nn_msg2 = findViewById(R.id.nonetworkMsg2);
         tryAgain = findViewById(R.id.tryAgain);
+        home = findViewById(R.id.home);
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerList = findViewById(R.id.drawer_list);
         sourceList = new ArrayList<>();
