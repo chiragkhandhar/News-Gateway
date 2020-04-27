@@ -99,7 +99,7 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
         {
             Log.d(TAG, "EXCEPTION | parseJSON: bp: " + e);
         }
-        Log.d(TAG, "bp: parseJSON: Number of Articles: " + tempList.size());
+
         return tempList;
     }
 
@@ -217,7 +217,6 @@ public class ArticleDownloader extends AsyncTask<String,Void, ArrayList<Article>
     @Override
     protected void onPostExecute(ArrayList<Article> articles)
     {
-        Log.d(TAG, "bp: onPostExecute: Number of Articles: " + articles.size());
         newsService.setArticles(articles);
         super.onPostExecute(articles);
     }

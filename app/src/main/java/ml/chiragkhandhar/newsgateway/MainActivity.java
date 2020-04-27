@@ -217,10 +217,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         if(drawerToggle.onOptionsItemSelected(item))
-        {
-            Log.d(TAG, "onOptionsItemSelected: bp: drawerToggle: " + item);
             return true;
-        }
 
         setTitle(item.getTitle());
 
@@ -282,18 +279,21 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public int getItemPosition(@NonNull Object object) {
+        public int getItemPosition(@NonNull Object object) 
+        {
             return POSITION_NONE;
         }
 
         @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(int position) 
+        {
             return fragments.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getCount() 
+        {
             return fragments.size();
         }
 
