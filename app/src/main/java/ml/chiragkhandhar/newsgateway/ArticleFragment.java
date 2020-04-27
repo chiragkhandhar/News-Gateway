@@ -59,7 +59,7 @@ public class ArticleFragment extends Fragment
             if(temp.getUrl() != null)
                 shareStory(fragment_layout,temp.getUrl());
 
-            if(!temp.getTitle().equals(""))
+            if(!isNull(temp.getTitle()))
             {
                 TextView title = fragment_layout.findViewById(R.id.title);
                 title.setText(temp.getTitle());
@@ -75,19 +75,19 @@ public class ArticleFragment extends Fragment
             }
 
 
-            if(!temp.getAuthor().equals(""))
+            if(!isNull(temp.getAuthor()))
             {
                 TextView author = fragment_layout.findViewById(R.id.author);
                 author.setText(temp.getAuthor());
             }
 
-            if(!temp.getPublishedAt().equals(""))
+            if(!isNull(temp.getPublishedAt()))
             {
                 TextView publishedAt = fragment_layout.findViewById(R.id.publishedAt);
                 publishedAt.setText(temp.getPublishedAt());
             }
 
-            if(!temp.getDescription().equals(""))
+            if(!isNull(temp.getDescription()))
             {
                 TextView desc = fragment_layout.findViewById(R.id.description);
                 desc.setText(temp.getDescription());
@@ -103,7 +103,7 @@ public class ArticleFragment extends Fragment
                 });
             }
 
-            if(temp.getUrlToImage() == null || temp.getUrlToImage().equals("null"))
+            if(isNull(temp.getUrlToImage()))
             {
                 ImageView picture = fragment_layout.findViewById(R.id.image);
                 picture.setBackgroundResource(R.drawable.placeholder);
@@ -129,6 +129,16 @@ public class ArticleFragment extends Fragment
                         .fitCenter()
                         .error(R.drawable.error)
                         .into(picture);
+
+                picture.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if(temp.getUrl() != null)
+                            openStory(temp.getUrl());
+                    }
+                });
             }
 
             TextView pageNum = fragment_layout.findViewById(R.id.pageNo);
@@ -138,6 +148,14 @@ public class ArticleFragment extends Fragment
         }
         else
             return null;
+    }
+
+    private boolean isNull(String data)
+    {
+        if(data == null || data.equals("null"))
+            return true;
+        else
+            return false;
     }
 
     private void shareStory(View v, final String URL)
