@@ -126,7 +126,6 @@ public class ArticleFragment extends Fragment
                 Glide.with(this)
                         .load(temp.getUrlToImage())
                         .placeholder(R.drawable.loading)
-                        .fitCenter()
                         .error(R.drawable.error)
                         .into(picture);
 

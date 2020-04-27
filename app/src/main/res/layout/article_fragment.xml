@@ -80,7 +80,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:layout_marginBottom="24dp"
                         android:textColor="@color/blue"
@@ -88,7 +87,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.498"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/description"
                         tools:text="# of #" />
 
                     <TextView
@@ -96,15 +94,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
                         android:fontFamily="@font/product_sans_regular"
                         android:justificationMode="inter_word"
                         android:textAlignment="inherit"
                         android:textColor="@color/grey"
+                        app:layout_constraintBottom_toTopOf="@+id/pageNo"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/image"
                         tools:text="hello" />
 
                     <androidx.constraintlayout.widget.Guideline
@@ -117,12 +115,13 @@
                     <ImageView
                         android:id="@+id/image"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="168dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
                         android:contentDescription="@string/image"
-                        android:scaleType="fitCenter"
+                        android:scaleType="center"
+                        app:layout_constraintBottom_toTopOf="@+id/description"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.498"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/author"
                         app:srcCompat="@drawable/placeholder" />
@@ -132,13 +131,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="24dp"
-                        android:layout_marginBottom="24dp"
                         android:background="@drawable/card_btns"
                         android:contentDescription="@string/share"
                         android:elevation="4dp"
                         android:padding="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:tooltipText="@string/share"
+                        app:layout_constraintBottom_toBottomOf="@+id/pageNo"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/pageNo"
                         app:srcCompat="@drawable/share" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
