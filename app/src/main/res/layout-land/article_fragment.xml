@@ -51,9 +51,9 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/product_sans_regular"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/red"
                         android:visibility="visible"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+                        app:layout_constraintEnd_toStartOf="@id/vert25"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/title"
                         tools:text="publishedAt" />
@@ -62,16 +62,15 @@
                         android:id="@+id/author"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/product_sans_regular"
-                        android:textAlignment="viewStart"
-                        android:textColor="@color/colorPrimary"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/yellow"
                         android:visibility="visible"
                         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/publishedAt"
+                        app:layout_constraintStart_toStartOf="@id/vert25"
+                        app:layout_constraintTop_toBottomOf="@+id/title"
                         tools:text="author" />
 
                     <TextView
@@ -138,6 +137,13 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:srcCompat="@drawable/share" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/vert25"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.25" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

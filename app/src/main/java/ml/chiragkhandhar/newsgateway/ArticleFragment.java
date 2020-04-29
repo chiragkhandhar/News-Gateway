@@ -73,6 +73,20 @@ public class ArticleFragment extends Fragment
                     }
                 });
             }
+            else
+            {
+                TextView title = fragment_layout.findViewById(R.id.title);
+                title.setText(R.string.noTitleMsg1);
+                title.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        if(temp.getUrl() != null)
+                            openStory(temp.getUrl());
+                    }
+                });
+            }
 
 
             if(!isNull(temp.getAuthor()))

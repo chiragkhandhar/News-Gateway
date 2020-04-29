@@ -17,6 +17,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -82,11 +84,9 @@ public class MainActivity extends AppCompatActivity
                         Intent intent = new Intent(MainActivity.ACTION_MSG_TO_SERVICE);
                         intent.putExtra(SOURCE, temp);
                         sendBroadcast(intent);
-
                         setTitle(temp.getName());
+                        pager.setBackgroundResource(R.color.light_grey);
                         Snackbar.make(view,temp.getName() + " Selected", Snackbar.LENGTH_SHORT).show();
-
-
                         drawerLayout.closeDrawer(drawerList);
                     }
                 }
@@ -100,6 +100,11 @@ public class MainActivity extends AppCompatActivity
                 setTitle(getString(R.string.app_name));
                 fragments.clear();
                 pageAdapter.notifyDataSetChanged();
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                    pager.setBackgroundResource(R.drawable.bg_lsc);
+                else
+                    pager.setBackgroundResource(R.drawable.bg_pt);
 
             }
         });
@@ -117,19 +122,19 @@ public class MainActivity extends AppCompatActivity
             nn_msg1.setVisibility(View.GONE);
             nn_msg2.setVisibility(View.GONE);
             tryAgain.setVisibility(View.GONE);
+            home.setVisibility(View.VISIBLE);
         }
         else
         {
             nn_msg1.setVisibility(View.VISIBLE);
             nn_msg2.setVisibility(View.VISIBLE);
             tryAgain.setVisibility(View.VISIBLE);
+            home.setVisibility(View.GONE);
         }
 
         IntentFilter filter1 = new IntentFilter(ACTION_NEWS_STORY);
         registerReceiver(newsReceiver, filter1);
     }
-
-
 
      public void setUp_Categories(View v)
     {
@@ -139,12 +144,14 @@ public class MainActivity extends AppCompatActivity
             nn_msg1.setVisibility(View.GONE);
             nn_msg2.setVisibility(View.GONE);
             tryAgain.setVisibility(View.GONE);
+            home.setVisibility(View.VISIBLE);
         }
         else
         {
             nn_msg1.setVisibility(View.VISIBLE);
             nn_msg2.setVisibility(View.VISIBLE);
             tryAgain.setVisibility(View.VISIBLE);
+            home.setVisibility(View.GONE);
         }
     }
 
@@ -177,20 +184,56 @@ public class MainActivity extends AppCompatActivity
 
     public void setSources(Map<String, ArrayList<Source>> hashMap)
     {
-       menu.clear();
-       globalHM = hashMap;
+       try
+       {
+           menu.clear();
+           globalHM = hashMap;
+           int i = 0;
 
-       for(String category: hashMap.keySet())
-           menu.add(showCamelCase(category));
+           for(String category: hashMap.keySet())
+           {
+               SpannableString x = new SpannableString(showCamelCase(category));
+               x.setSpan(new ForegroundColorSpan(getColor(selectColor(category))), i, category.length(), 0);
+               menu.add(x);
+           }
 
-       sourceList.addAll(Objects.requireNonNull(globalHM.get("all")));
 
-       drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item,sourceList));
+           sourceList.addAll(Objects.requireNonNull(globalHM.get("all")));
+           drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item,sourceList));
 
-        if (getSupportActionBar() != null)
+           if (getSupportActionBar() != null)
+           {
+               getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+               getSupportActionBar().setHomeButtonEnabled(true);
+           }
+       }
+       catch (Exception e)
+       {
+           Log.d(TAG, "bp: setSources: Menu object did not inflate");
+           new SourceDownloader(this).execute();
+       }
+    }
+
+    public static int selectColor(String category)
+    {
+        switch (category)
         {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            case "business":
+                return R.color.blue;
+            case "entertainment":
+                return R.color.yellow;
+            case "general":
+                return R.color.colorPrimary;
+            case "health":
+                return R.color.red;
+            case "science":
+                return R.color.purple;
+            case "sports":
+                return R.color.green;
+            case "technology":
+                return R.color.grey;
+            default:
+                return R.color.black;
         }
     }
 
@@ -207,12 +250,6 @@ public class MainActivity extends AppCompatActivity
         return CamelCase;
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
-    }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig)
@@ -234,20 +271,52 @@ public class MainActivity extends AppCompatActivity
         if(drawerToggle.onOptionsItemSelected(item))
             return true;
 
-        setTitle(item.getTitle());
+        setTitle(item.getTitle().toString());
 
         sourceList.clear();
         ArrayList<Source> drawerTempList = globalHM.get(item.getTitle().toString().toLowerCase());
 
-        Toast.makeText(this, drawerTempList.size() + " Sources Loaded ", Toast.LENGTH_SHORT).show();
-
         if(drawerTempList != null)
+        {
             sourceList.addAll(drawerTempList);
+        }
 
         ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
+        Toast.makeText(this, drawerTempList.size() + " Sources Loaded ", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        outState.putSerializable("articleArrayList",articleArrayList);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        unregisterReceiver(newsReceiver);
+        Intent i = new Intent(this,NewsService.class);
+        stopService(i);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        articleArrayList = (ArrayList<Article>) savedInstanceState.getSerializable("articleArrayList");
+    }
+
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
 
     @Override
     protected void onResume()
@@ -258,14 +327,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    protected void onDestroy()
-    {
-        unregisterReceiver(newsReceiver);
-        Intent i = new Intent(this,NewsService.class);
-        stopService(i);
-        super.onDestroy();
-    }
+
 
     public void setFragments()
     {

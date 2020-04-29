@@ -9,5 +9,6 @@
     <string name="share">Share</string>
     <string name="share_header">Checkout this new story from News Gateway:\n</string>
     <string name="home">home</string>
+    <string name="noTitleMsg1">Tap for full Story</string>
 
 </resources>

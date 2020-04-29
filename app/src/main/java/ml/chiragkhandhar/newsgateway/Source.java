@@ -1,5 +1,8 @@
 package ml.chiragkhandhar.newsgateway;
 
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -9,6 +12,7 @@ class Source implements Serializable
     private String id;
     private String name;
     private String category;
+
 
     Source()
     {
@@ -42,7 +46,8 @@ class Source implements Serializable
     }
 
     @NonNull
-    public String toString() {
+    public String toString()
+    {
         return name;
     }
 }
