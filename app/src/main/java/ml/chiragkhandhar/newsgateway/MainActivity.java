@@ -8,6 +8,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,9 +18,9 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,10 +41,11 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     NewsReceiver newsReceiver;
     Menu menu;
+    RecyclerView rv;
     ImageButton home;
     ActionBarDrawerToggle drawerToggle;
     DrawerLayout drawerLayout;
@@ -50,13 +53,15 @@ public class MainActivity extends AppCompatActivity
     Map<String, ArrayList<Source>> globalHM;
     ArrayList<Source> sourceList;
     ArrayList<Article> articleArrayList;
+    ArrayList<Article> headlinesArrayList = new ArrayList<>();
+    HeadLineAdapter headLineAdapter;
 
     List<Fragment> fragments;
     MyPageAdapter pageAdapter;
     ViewPager pager;
 
     private static final String TAG = "MainActivity";
-    TextView nn_msg1, nn_msg2;
+    TextView nn_msg1, nn_msg2, topHeadLines;
     Button tryAgain;
 
     static final String ACTION_MSG_TO_SERVICE = "ACTION_MSG_TO_SERVICE";
@@ -70,6 +75,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUp_Components();
+
+        headLineAdapter = new HeadLineAdapter(headlinesArrayList,this);
+        rv.setAdapter(headLineAdapter);
+        rv.setLayoutManager(new LinearLayoutManager(this));
 
         Intent serviceIntent = new Intent(this, NewsService.class);
         startService(serviceIntent);
@@ -85,6 +94,7 @@ public class MainActivity extends AppCompatActivity
                         intent.putExtra(SOURCE, temp);
                         sendBroadcast(intent);
                         setTitle(temp.getName());
+                        pager.setVisibility(View.VISIBLE);
                         pager.setBackgroundResource(R.color.light_grey);
                         Snackbar.make(view,temp.getName() + " Selected", Snackbar.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(drawerList);
@@ -97,12 +107,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                setTitle(getString(R.string.app_name));
-                fragments.clear();
-                pageAdapter.notifyDataSetChanged();
-                int orientation = getResources().getConfiguration().orientation;
+                new HeadlinesLoader(MainActivity.this).execute();
+                topHeadLines.setVisibility(View.VISIBLE);
+                setTitle(R.string.app_name);
+                pager.setVisibility(View.GONE);
+                rv.scrollToPosition(0);
 
-
+                sourceList.clear();
+                sourceList.addAll(globalHM.get("all"));
+                ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
             }
         });
 
@@ -116,10 +129,13 @@ public class MainActivity extends AppCompatActivity
         if(networkChecker())
         {
             new SourceDownloader(this).execute();
+            new HeadlinesLoader(this).execute();
             nn_msg1.setVisibility(View.GONE);
             nn_msg2.setVisibility(View.GONE);
             tryAgain.setVisibility(View.GONE);
             home.setVisibility(View.VISIBLE);
+            topHeadLines.setVisibility(View.VISIBLE);
+
         }
         else
         {
@@ -127,6 +143,7 @@ public class MainActivity extends AppCompatActivity
             nn_msg2.setVisibility(View.VISIBLE);
             tryAgain.setVisibility(View.VISIBLE);
             home.setVisibility(View.GONE);
+            topHeadLines.setVisibility(View.GONE);
         }
 
         IntentFilter filter1 = new IntentFilter(ACTION_NEWS_STORY);
@@ -138,10 +155,13 @@ public class MainActivity extends AppCompatActivity
         if(networkChecker())
         {
             new SourceDownloader(this).execute();
+            new HeadlinesLoader(this).execute();
             nn_msg1.setVisibility(View.GONE);
             nn_msg2.setVisibility(View.GONE);
             tryAgain.setVisibility(View.GONE);
             home.setVisibility(View.VISIBLE);
+            topHeadLines.setVisibility(View.VISIBLE);
+
         }
         else
         {
@@ -149,6 +169,7 @@ public class MainActivity extends AppCompatActivity
             nn_msg2.setVisibility(View.VISIBLE);
             tryAgain.setVisibility(View.VISIBLE);
             home.setVisibility(View.GONE);
+            topHeadLines.setVisibility(View.GONE);
         }
     }
 
@@ -161,6 +182,8 @@ public class MainActivity extends AppCompatActivity
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerList = findViewById(R.id.drawer_list);
         sourceList = new ArrayList<>();
+        rv = findViewById(R.id.recycler);
+        topHeadLines = findViewById(R.id.topHeadlines);
 
         fragments = new ArrayList<>();
         pageAdapter = new MyPageAdapter(getSupportFragmentManager());
@@ -179,6 +202,17 @@ public class MainActivity extends AppCompatActivity
         return networkInfo != null && networkInfo.isConnected();
     }
 
+    public void updateHeadlines(ArrayList<Article> headlines)
+    {
+        headlinesArrayList.clear();
+        if(headlines.size()!=0)
+        {
+            headlinesArrayList.addAll(headlines);
+        }
+        headLineAdapter.notifyDataSetChanged();
+
+    }
+
     public void setSources(Map<String, ArrayList<Source>> hashMap)
     {
        try
@@ -189,9 +223,7 @@ public class MainActivity extends AppCompatActivity
 
            for(String category: hashMap.keySet())
            {
-               SpannableString x = new SpannableString(showCamelCase(category));
-               x.setSpan(new ForegroundColorSpan(getColor(selectColor(category))), i, category.length(), 0);
-               menu.add(x);
+               menu.add(showCamelCase(category));
            }
 
 
@@ -303,7 +335,6 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-
         articleArrayList = (ArrayList<Article>) savedInstanceState.getSerializable("articleArrayList");
     }
 
@@ -323,9 +354,6 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
-
-
-
     public void setFragments()
     {
         for (int i = 0; i < pageAdapter.getCount(); i++)
@@ -340,6 +368,18 @@ public class MainActivity extends AppCompatActivity
 
         pageAdapter.notifyDataSetChanged();
         pager.setCurrentItem(0);
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        int position = rv.getChildAdapterPosition(view);
+        Article temp = headlinesArrayList.get(position);
+        if(temp.getUrl() != null)
+        {
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(temp.getUrl()));
+            startActivity(i);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
