@@ -101,10 +101,7 @@ public class MainActivity extends AppCompatActivity
                 fragments.clear();
                 pageAdapter.notifyDataSetChanged();
                 int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    pager.setBackgroundResource(R.drawable.bg_lsc);
-                else
-                    pager.setBackgroundResource(R.drawable.bg_pt);
+
 
             }
         });
