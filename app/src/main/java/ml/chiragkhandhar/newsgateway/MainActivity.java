@@ -210,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             headlinesArrayList.addAll(headlines);
         }
         headLineAdapter.notifyDataSetChanged();
-
     }
 
     public void setSources(Map<String, ArrayList<Source>> hashMap)
@@ -243,28 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }
     }
 
-    public static int selectColor(String category)
-    {
-        switch (category)
-        {
-            case "business":
-                return R.color.blue;
-            case "entertainment":
-                return R.color.yellow;
-            case "general":
-                return R.color.colorPrimary;
-            case "health":
-                return R.color.red;
-            case "science":
-                return R.color.purple;
-            case "sports":
-                return R.color.green;
-            case "technology":
-                return R.color.grey;
-            default:
-                return R.color.black;
-        }
-    }
+
 
     public static String showCamelCase(String str)
     {
@@ -370,17 +348,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pager.setCurrentItem(0);
     }
 
+
     @Override
     public void onClick(View view)
     {
         int position = rv.getChildAdapterPosition(view);
         Article temp = headlinesArrayList.get(position);
+
         if(temp.getUrl() != null)
         {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(temp.getUrl()));
             startActivity(i);
         }
     }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
