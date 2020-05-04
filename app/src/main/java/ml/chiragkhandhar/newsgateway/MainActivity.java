@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         pager.setBackgroundResource(R.color.light_grey);
                         Snackbar.make(view,temp.getName() + " Selected", Snackbar.LENGTH_SHORT).show();
                         drawerLayout.closeDrawer(drawerList);
+                        swiper.setEnabled(false);
+
                     }
                 }
         );
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 setTitle(R.string.app_name);
                 pager.setVisibility(View.GONE);
                 rv.scrollToPosition(0);
-
+                swiper.setEnabled(true);
                 sourceList.clear();
                 sourceList.addAll(globalHM.get("all"));
                 ((ArrayAdapter) drawerList.getAdapter()).notifyDataSetChanged();
