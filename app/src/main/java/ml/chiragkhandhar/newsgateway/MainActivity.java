@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -43,6 +44,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
+    SwipeRefreshLayout swiper;
     NewsReceiver newsReceiver;
     Menu menu;
     RecyclerView rv;
@@ -75,6 +77,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUp_Components();
+
+        swiper.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                rv.setAdapter(headLineAdapter);
+                rv.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                new HeadlinesLoader(MainActivity.this).execute();
+
+                Toast.makeText(MainActivity.this, "Most Recent Headlines loaded", Toast.LENGTH_SHORT).show();
+                swiper.setRefreshing(false);
+            }
+        });
+
 
         headLineAdapter = new HeadLineAdapter(headlinesArrayList,this);
         rv.setAdapter(headLineAdapter);
@@ -175,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setUp_Components()
     {
+        swiper = findViewById(R.id.swiper);
         nn_msg1 = findViewById(R.id.nonetworkIcon);
         nn_msg2 = findViewById(R.id.nonetworkMsg2);
         tryAgain = findViewById(R.id.tryAgain);
@@ -296,7 +314,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState)
     {
-        outState.putSerializable("articleArrayList",articleArrayList);
         super.onSaveInstanceState(outState);
     }
 
@@ -313,7 +330,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        articleArrayList = (ArrayList<Article>) savedInstanceState.getSerializable("articleArrayList");
     }
 
 
