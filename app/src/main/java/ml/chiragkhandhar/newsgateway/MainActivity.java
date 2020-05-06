@@ -83,10 +83,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onRefresh()
             {
+                drawerLayout.closeDrawer(drawerList);
                 rv.setAdapter(headLineAdapter);
                 rv.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 new HeadlinesLoader(MainActivity.this).execute();
-
                 Toast.makeText(MainActivity.this, "Most Recent Headlines loaded", Toast.LENGTH_SHORT).show();
                 swiper.setRefreshing(false);
             }
