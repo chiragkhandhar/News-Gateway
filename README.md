@@ -14,7 +14,13 @@
   <a style="text-decoration:none">
     <img src="https://img.shields.io/badge/Platform-Android-brightgreen" alt="Platform" />
   </a>
+   <a style="text-decoration:none" href="https://github.com/chiragkhandhar/News-Gateway/raw/master/app/release/News%20Gateway.apk">
+    <img src="https://img.shields.io/badge/Download-App-red" alt="Platform" />
+  </a>
+ 
 </p>
+
+
 
 ## What is News Gateway and why do I care?
 
